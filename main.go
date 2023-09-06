@@ -59,7 +59,6 @@ func fetchCommand() *cobra.Command {
 	flags.StringVarP(&auth, "auth", "", "", "The auth string, format is 'user:password'")
 	flags.StringVarP(&opts.Token, "token", "", "", "Pull registry token")
 	flags.BoolVarP(&opts.Insecure, "insecure", "", false, "Skip TLS verification while pulling")
-	flags.BoolVarP(&opts.InsecurePolicy, "insecure-policy", "", false, "Skip policy verification while pulling")
 	flags.StringVarP(&opts.BaseDir, "base-dir", "b", "", "The base directory to store downloaded images, default is /tmp/ctr-fetch")
 	flags.BoolVarP(&opts.Force, "force", "f", false, "Force re-download the image even if it is already present in the base directory")
 

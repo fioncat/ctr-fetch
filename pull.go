@@ -33,8 +33,6 @@ type PullOptions struct {
 
 	Insecure bool
 
-	InsecurePolicy bool
-
 	BaseDir string
 
 	Force bool
@@ -144,15 +142,7 @@ func PullImage(name string, opts PullOptions) (*PullResult, error) {
 		srcSystemContext.DockerInsecureSkipTLSVerify = types.NewOptionalBool(true)
 	}
 
-	var policy *signature.Policy
-	if opts.InsecurePolicy {
-		policy = &signature.Policy{Default: []signature.PolicyRequirement{signature.NewPRInsecureAcceptAnything()}}
-	} else {
-		policy, err = signature.DefaultPolicy(nil)
-	}
-	if err != nil {
-		return nil, fmt.Errorf("Create pull policy error: %w", err)
-	}
+	policy := &signature.Policy{Default: []signature.PolicyRequirement{signature.NewPRInsecureAcceptAnything()}}
 	policyContext, err := signature.NewPolicyContext(policy)
 	if err != nil {
 		return nil, fmt.Errorf("Load trusted policy error: %w", err)
@@ -165,6 +155,9 @@ func PullImage(name string, opts PullOptions) (*PullResult, error) {
 		DestinationCtx:        destSystemContext,
 		ForceManifestMIMEType: DockerV2Schema2MediaType,
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	manifest, err := parseManifest(manifestData)
 	if err != nil {
