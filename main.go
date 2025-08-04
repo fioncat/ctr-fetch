@@ -34,17 +34,17 @@ func fetchCommand() *cobra.Command {
 			imageName, destPath := args[0], args[1]
 			err := ensureDir(destPath)
 			if err != nil {
-				return fmt.Errorf("Ensure dest directory: %w", err)
+				return fmt.Errorf("ensure dest directory: %w", err)
 			}
 
 			pullResult, err := PullImage(imageName, opts)
 			if err != nil {
-				return fmt.Errorf("Pull image error: %w", err)
+				return fmt.Errorf("pull image error: %w", err)
 			}
 
 			size, err := ExtractDirectory(pullResult, destPath)
 			if err != nil {
-				return fmt.Errorf("Extract layers error: %v", err)
+				return fmt.Errorf("extract layers error: %v", err)
 			}
 
 			sizeStr := humanize.Bytes(size)
@@ -68,7 +68,7 @@ func fetchCommand() *cobra.Command {
 func parseAuth(auth string) (string, string, error) {
 	fields := strings.Split(auth, ":")
 	if len(fields) <= 1 {
-		return "", "", fmt.Errorf("Invalid auth %q, should be 'user:password'", auth)
+		return "", "", fmt.Errorf("invalid auth %q, should be 'user:password'", auth)
 	}
 	user := fields[0]
 	password := strings.Join(fields[1:], ":")

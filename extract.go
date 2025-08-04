@@ -26,7 +26,7 @@ func ExtractDirectory(pullResult *PullResult, destDir string) (uint64, error) {
 		srcPath := filepath.Join(pullResult.Path, id)
 		size, err := extract(srcPath, destDir)
 		if err != nil {
-			return 0, fmt.Errorf("Extract %q: %v", id, err)
+			return 0, fmt.Errorf("extract %q: %v", id, err)
 		}
 		totalSize += size
 	}
@@ -41,13 +41,13 @@ func extract(src, dest string) (uint64, error) {
 	var size uint64
 	file, err := os.Open(src)
 	if err != nil {
-		return 0, fmt.Errorf("Open src file: %w", err)
+		return 0, fmt.Errorf("open src file: %w", err)
 	}
 	defer file.Close()
 
 	gr, err := gzip.NewReader(file)
 	if err != nil {
-		return 0, fmt.Errorf("Open gzip file: %w", err)
+		return 0, fmt.Errorf("open gzip file: %w", err)
 	}
 	defer gr.Close()
 
@@ -58,7 +58,7 @@ func extract(src, dest string) (uint64, error) {
 			if errors.Is(err, io.EOF) {
 				break
 			}
-			return 0, fmt.Errorf("Read gzip file: %w", err)
+			return 0, fmt.Errorf("read gzip file: %w", err)
 		}
 		if hdr == nil {
 			continue
@@ -69,22 +69,22 @@ func extract(src, dest string) (uint64, error) {
 		if hdr.Typeflag == tar.TypeReg {
 			err = ensureDir(destPath)
 			if err != nil {
-				return 0, fmt.Errorf("Ensure dir: %w", err)
+				return 0, fmt.Errorf("ensure dir: %w", err)
 			}
 			dstFile, err := os.OpenFile(destPath, os.O_CREATE|os.O_RDWR, os.FileMode(hdr.Mode))
 			if err != nil {
-				return 0, fmt.Errorf("Open file: %w", err)
+				return 0, fmt.Errorf("open file: %w", err)
 			}
 
 			copied, err := io.Copy(dstFile, tr)
 			if err != nil {
-				return 0, fmt.Errorf("Copy file: %w", err)
+				return 0, fmt.Errorf("copy file: %w", err)
 			}
 			size += uint64(copied)
 
 			err = dstFile.Close()
 			if err != nil {
-				return 0, fmt.Errorf("Close file: %w", err)
+				return 0, fmt.Errorf("close file: %w", err)
 			}
 		}
 	}
@@ -105,7 +105,7 @@ func ensureDir(filepath string) error {
 		return err
 	}
 	if !stat.IsDir() {
-		return fmt.Errorf("Path %s is not a directory", dir)
+		return fmt.Errorf("path %s is not a directory", dir)
 	}
 	return nil
 }

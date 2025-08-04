@@ -61,23 +61,23 @@ func parseManifest(data []byte) (*Manifest, error) {
 	var m Manifest
 	err := json.Unmarshal(data, &m)
 	if err != nil {
-		return nil, fmt.Errorf("Invalid manifest format %q: %v", string(data), err)
+		return nil, fmt.Errorf("invalid manifest format %q: %v", string(data), err)
 	}
 
 	if m.SchemaVersion != DockerV2SchemaVersion {
-		return nil, fmt.Errorf("Unsupport manifest schema version: %d, expect %d", m.SchemaVersion, DockerV2SchemaVersion)
+		return nil, fmt.Errorf("unsupport manifest schema version: %d, expect %d", m.SchemaVersion, DockerV2SchemaVersion)
 	}
 
 	if m.MediaType != DockerV2Schema2MediaType {
-		return nil, fmt.Errorf("Unsupport manifest schema: %q, expect %q", m.SchemaVersion, DockerV2Schema2MediaType)
+		return nil, fmt.Errorf("unsupport manifest schema: %q, expect %q", m.SchemaVersion, DockerV2Schema2MediaType)
 	}
 
 	for _, layer := range m.Layers {
 		if layer.MediaType != DockerV2Schema2LayerMediaType {
-			return nil, fmt.Errorf("Unsupport layer schema: %q, expect %q", layer.MediaType, DockerV2Schema2LayerMediaType)
+			return nil, fmt.Errorf("unsupport layer schema: %q, expect %q", layer.MediaType, DockerV2Schema2LayerMediaType)
 		}
 		if !strings.HasPrefix(layer.Digest, SHA256Prefix) {
-			return nil, fmt.Errorf("Unsupport layer digest %q, expect sha256", layer.Digest)
+			return nil, fmt.Errorf("unsupport layer digest %q, expect sha256", layer.Digest)
 		}
 	}
 
@@ -87,7 +87,7 @@ func parseManifest(data []byte) (*Manifest, error) {
 func PullImage(name string, opts PullOptions) (*PullResult, error) {
 	destDir, exists, err := getDestDir(name, opts.BaseDir)
 	if err != nil {
-		return nil, fmt.Errorf("Get base dir error: %w", err)
+		return nil, fmt.Errorf("get base dir error: %w", err)
 	}
 
 	if exists && !opts.Force {
@@ -97,7 +97,7 @@ func PullImage(name string, opts PullOptions) (*PullResult, error) {
 			var data []byte
 			data, err = os.ReadFile(manifestPath)
 			if err != nil {
-				return nil, fmt.Errorf("Read manifest file %s: %v", manifestPath, err)
+				return nil, fmt.Errorf("read manifest file %s: %v", manifestPath, err)
 			}
 
 			var manifest *Manifest
@@ -116,14 +116,14 @@ func PullImage(name string, opts PullOptions) (*PullResult, error) {
 	destName := fmt.Sprintf("dir:%s", destDir)
 	destRef, err := alltransports.ParseImageName(destName)
 	if err != nil {
-		return nil, fmt.Errorf("Invalid dir %s: %v", destDir, err)
+		return nil, fmt.Errorf("invalid dir %s: %v", destDir, err)
 	}
 	destSystemContext := &types.SystemContext{}
 
 	srcName := fmt.Sprintf("docker://%s", name)
 	srcRef, err := alltransports.ParseImageName(srcName)
 	if err != nil {
-		return nil, fmt.Errorf("Invalid image name %s: %w", name, err)
+		return nil, fmt.Errorf("invalid image name %s: %w", name, err)
 	}
 	srcSystemContext := &types.SystemContext{}
 
@@ -145,7 +145,7 @@ func PullImage(name string, opts PullOptions) (*PullResult, error) {
 	policy := &signature.Policy{Default: []signature.PolicyRequirement{signature.NewPRInsecureAcceptAnything()}}
 	policyContext, err := signature.NewPolicyContext(policy)
 	if err != nil {
-		return nil, fmt.Errorf("Load trusted policy error: %w", err)
+		return nil, fmt.Errorf("load trusted policy error: %w", err)
 	}
 
 	ctx := context.Background()
@@ -184,15 +184,15 @@ func getDestDir(name, baseDir string) (string, bool, error) {
 		if os.IsNotExist(err) {
 			err = os.MkdirAll(dir, os.ModePerm)
 			if err != nil {
-				return "", false, fmt.Errorf("Mkdir for dest error: %w", err)
+				return "", false, fmt.Errorf("mkdir for dest error: %w", err)
 			}
 			return dir, false, nil
 		}
-		return "", false, fmt.Errorf("Stat for dest error: %w", err)
+		return "", false, fmt.Errorf("stat for dest error: %w", err)
 	}
 
 	if !stat.IsDir() {
-		return "", false, fmt.Errorf("Dest dir %s is not a directory", dir)
+		return "", false, fmt.Errorf("dest dir %s is not a directory", dir)
 	}
 
 	return dir, true, nil
